@@ -1,6 +1,5 @@
 import 'package:ayurvibe/screens/homeScreen/home_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lottie/lottie.dart';
 
 class SplashScreen extends StatefulWidget {
