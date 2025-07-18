@@ -81,130 +81,148 @@ class _ContactFormPageState extends State<ContactFormPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Sri Vinayaga Ayurvibe'),
-        centerTitle: true,
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: ListView(
-          children: [
-            const Text(
-              'Get in Touch',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 25),
-            TextField(
-              controller: nameController,
-              decoration: const InputDecoration(
-                labelText: 'Full Name',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 15),
-            TextField(
-              controller: ageController,
-              keyboardType: TextInputType.number,
-              decoration: const InputDecoration(
-                labelText: 'Age',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 15),
-            TextField(
-              controller: mobileController,
-              keyboardType: TextInputType.phone,
-              decoration: const InputDecoration(
-                labelText: 'Mobile Number',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 15),
-            TextField(
-              controller: emailController,
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
-                labelText: 'Your Email',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 15),
-            DropdownButtonFormField<String>(
-              value: inquiryType,
-              decoration: const InputDecoration(
-                labelText: 'Inquiry Type',
-                border: OutlineInputBorder(),
-              ),
-              items:
-                  ['Appointment', 'Treatment Info']
-                      .map(
-                        (label) =>
-                            DropdownMenuItem(value: label, child: Text(label)),
-                      )
-                      .toList(),
-              onChanged: (value) {
-                setState(() {
-                  inquiryType = value!;
-                });
-              },
-            ),
-            const SizedBox(height: 15),
-            TextField(
-              controller: messageController,
-              maxLines: 4,
-              decoration: const InputDecoration(
-                labelText: 'Your Message',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 25),
-            SizedBox(
-              width: double.infinity,
-              height: 48,
-              child: ElevatedButton.icon(
-                onPressed: () async {
-                  if (nameController.text.isEmpty ||
-                      ageController.text.isEmpty ||
-                      mobileController.text.isEmpty ||
-                      emailController.text.isEmpty ||
-                      messageController.text.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('⚠️ Please fill in all the fields.'),
+    return Center(
+      child: Card(
+        color: Colors.white,
+        elevation: 6,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 500),
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Get in Touch',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1B4332),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                _buildTextField(nameController, 'Full Name'),
+                _buildTextField(ageController, 'Age', TextInputType.number),
+                _buildTextField(
+                  mobileController,
+                  'Mobile Number',
+                  TextInputType.phone,
+                ),
+                _buildTextField(
+                  emailController,
+                  'Your Email',
+                  TextInputType.emailAddress,
+                ),
+                const SizedBox(height: 15),
+                DropdownButtonFormField<String>(
+                  value: inquiryType,
+                  decoration: _inputDecoration('Inquiry Type'),
+                  items:
+                      ['Appointment', 'Treatment Info']
+                          .map(
+                            (label) => DropdownMenuItem(
+                              value: label,
+                              child: Text(label),
+                            ),
+                          )
+                          .toList(),
+                  onChanged: (value) {
+                    setState(() => inquiryType = value!);
+                  },
+                ),
+                const SizedBox(height: 15),
+                TextField(
+                  controller: messageController,
+                  maxLines: 4,
+                  decoration: _inputDecoration('Your Message'),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: ElevatedButton.icon(
+                    onPressed: _handleSendPressed,
+                    icon:
+                        isSending
+                            ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                            : const Icon(Icons.send),
+                    label: const Text('Send Message'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepOrange,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                    );
-                    return;
-                  }
-
-                  setState(() => isSending = true);
-                  await sendEmail(
-                    name: nameController.text,
-                    age: ageController.text,
-                    mobile: mobileController.text,
-                    email: emailController.text,
-                    type: inquiryType,
-                    message: messageController.text,
-                  );
-                  setState(() => isSending = false);
-                },
-                icon:
-                    isSending
-                        ? const SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          ),
-                        )
-                        : const Icon(Icons.send),
-                label: const Text('Send Message'),
-              ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
+  }
+
+  Widget _buildTextField(
+    TextEditingController controller,
+    String label, [
+    TextInputType keyboardType = TextInputType.text,
+  ]) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 15),
+      child: TextField(
+        controller: controller,
+        keyboardType: keyboardType,
+        decoration: _inputDecoration(label),
+      ),
+    );
+  }
+
+  InputDecoration _inputDecoration(String label) {
+    return InputDecoration(
+      labelText: label,
+      filled: true,
+      fillColor: const Color(0xFFF9F9F9),
+      contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Color(0xFF1B4332), width: 2),
+      ),
+    );
+  }
+
+  void _handleSendPressed() async {
+    if ([
+      nameController,
+      ageController,
+      mobileController,
+      emailController,
+      messageController,
+    ].any((controller) => controller.text.isEmpty)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('⚠️ Please fill in all the fields.')),
+      );
+      return;
+    }
+
+    setState(() => isSending = true);
+    await sendEmail(
+      name: nameController.text,
+      age: ageController.text,
+      mobile: mobileController.text,
+      email: emailController.text,
+      type: inquiryType,
+      message: messageController.text,
+    );
+    setState(() => isSending = false);
   }
 }

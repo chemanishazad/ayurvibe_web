@@ -33,9 +33,10 @@ class _MyAppState extends ConsumerState<MyApp> {
         return MaterialApp(
           debugShowCheckedModeBanner: false,
           title: 'Sri Vinayaga Ayurvibe',
-          themeMode: themeMode,
+          // themeMode:
+          //     themeMode == ThemeMode.light ? ThemeMode.light : ThemeMode.light,
           theme: lightTheme(fontSize),
-          darkTheme: darkTheme(fontSize),
+          // darkTheme: darkTheme(fontSize),
           initialRoute: '/',
           routes: AppRoutes.routes,
           builder:
